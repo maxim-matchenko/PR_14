@@ -8,24 +8,21 @@ using System;
 
 namespace DealerCenterApp
 {
-    // Структура «Дилерский центр» 
-    struct DealerCenter
+    struct DealerCenter// Структура «Дилерский центр» 
     {
-        // скрытие внутренней реализации структуры
+        // Скрытие внутренней реализации структур
         private string model;
         private string brand;
         private int year;
         private string equipment;
         private decimal price;
-
-        //  свойства для доступа на чтение (перезапись)
+        //Свойства для доступа на чтение
         public string Model => model;
         public string Brand => brand;
         public int Year => year;
         public string Equipment { get => equipment; set => equipment = value; }
         public decimal Price { get => price; set => price = value; }
-
-        // Конструктор структуры
+        //Конструктор структуры       
         public DealerCenter(string model, string brand, int year, string equipment, decimal price)
         {
             this.model = model;
@@ -34,33 +31,71 @@ namespace DealerCenterApp
             this.equipment = equipment;
             this.price = price;
         }
-        // Метод ввода данных членов структуры
+        //Метод ввода данных членов структуры
         public static DealerCenter InfoAboutObjStruct()
         {
-            Console.Write("Введите фирму (производителя): ");
-            string brand = Console.ReadLine();
-            Console.Write("Введите модель автомобиля: ");
-            string model = Console.ReadLine();
-            Console.Write("Введите год выпуска: ");
-            int year = int.Parse(Console.ReadLine());
-            Console.Write("Введите комплектацию: ");
-            string equipment = Console.ReadLine();
+            string brand = "";
+            string model = "";
+            int year = 0;
+            string equipment = "";
+
+            while (string.IsNullOrWhiteSpace(brand))//Ввод бренда с защитой от пустоты
+            {
+                Console.Write("Введите фирму (производителя): ");
+                brand = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(brand))
+                {
+                    Program.HandleError("Поле не может быть пустым. Попробуйте снова.");
+                }
+            }
+            while (string.IsNullOrWhiteSpace(model))//Ввод модели
+            {
+                Console.Write("Введите модель автомобиля: ");
+                model = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(model))
+                {
+                    Program.HandleError("Поле не может быть пустым. Попробуйте снова.");
+                }
+            }
+            while (true)//Ввод года с проверкой на корректность числа
+            {
+                Console.Write("Введите год выпуска  ");
+                string yearInput = Console.ReadLine();
+                if (int.TryParse(yearInput, out year))
+                {
+                    if (year > DateTime.Now.Year)
+                    {
+                        Program.HandleError($"Год {year} выглядит некорректно. Укажите год до–{DateTime.Now.Year}.");
+                        continue;
+                    }
+                    break;
+                }
+
+            }
+            while (string.IsNullOrWhiteSpace(equipment))// Ввод комплектации
+            {
+                Console.Write("Введите комплектацию: ");
+                equipment = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(equipment))
+                {
+                    Program.HandleError("Поле не может быть пустым. Попробуйте снова.");
+                }
+            }
             Console.Write("Введите цену (руб.): ");
             decimal price = decimal.Parse(Console.ReadLine());
+
             return new DealerCenter(model, brand, year, equipment, price);
         }
-        // Метод вывода информации об объекте
-        public void PrintInfoObjStruct()
+        public void PrintInfoObjStruct()// Метод вывода информации об объекте
         {
-            Console.WriteLine($"Автомобиль: {brand} {model} | Год: {year} | Комплектация: {equipment} | Цена: {price:N2} руб.");
+            Console.WriteLine($"Автомобиль: {brand} {model} | Год: {year} | Комплектация: {equipment} | Цена: {price} руб.");
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            // Переменная для контроля повторного запуска
-            string select;
+            string select;// Переменная для контроля повторного запуска
             do
             {
                 try
@@ -72,9 +107,9 @@ namespace DealerCenterApp
                     Console.WriteLine("Здравствуйте! Вас приветствует справочная система \"Дилерский центр\"");
                     Console.WriteLine("--- Новый расчет ---\n");
                     Console.Write("Введите количество автомобилей для ввода (n): ");
-                    int n = int.Parse(Console.ReadLine());
-                    // Создание массива структур
-                    DealerCenter[] cars = new DealerCenter[n];
+                    int n = int.Parse(Console.ReadLine());                 
+
+                    DealerCenter[] cars = new DealerCenter[n];// Создание массива структур
                     // 1. Ввод данных с клавиатуры
                     for (int i = 0; i < n; i++)
                     {
@@ -94,8 +129,8 @@ namespace DealerCenterApp
                     FindObjStruct(cars, searchModel);
                     // 4. Вывод информации о самом дорогом автомобиле
                     FindMostExpensive(cars);
-                    
-                    if (cars.Length > 0)// Проверка случайного события для первого автомобиля в списке (если массив не пуст)
+                    // Проверка случайного события для первого автомобиля в списке (если массив не пуст)
+                    if (cars.Length > 0)
                     {
                         TriggerRandomEvent(ref cars[0]);
                     }
@@ -104,14 +139,13 @@ namespace DealerCenterApp
                 {
                     HandleError(ex);
                 }
-                Console.Write("\nХотите выполнить программу еще раз? (да - 1 / нет - любая клавиша): ");
+                Console.Write("\nХотите выполнить программу еще раз? (да - 1 / нет - любая клавиша): ");// Запрос на повторное выполнение программы
                 select = Console.ReadLine();
             } while (select == "1"); 
             Console.WriteLine("\nПрограмма завершена. Нажмите Enter для выхода...");
             Console.ReadLine();
         }
-        // Метод сортировки массива структур по возрастанию года выпуска 
-        public static void SortedObjStruct(DealerCenter[] array)
+        public static void SortedObjStruct(DealerCenter[] array)// Метод сортировки массива структур по возрастанию года выпуска
         {
             for (int i = 0; i < array.Length - 1; i++)
             {
@@ -126,29 +160,26 @@ namespace DealerCenterApp
                 }
             }
         }
-        // Метод поиска данных в структуре по конкретной модели
-        public static void FindObjStruct(DealerCenter[] array, string searchModel)
+        public static void FindObjStruct(DealerCenter[] array, string searchModel) // Метод поиска данных в структуре по конкретной модели
         {
-            bool found = false;
+            bool flag = false;
             Console.WriteLine($"\nРезультаты поиска модели \"{searchModel}\":");
             foreach (var car in array)
             {
                 if (car.Model.Equals(searchModel, StringComparison.OrdinalIgnoreCase))
                 {
                     car.PrintInfoObjStruct();
-                    found = true;
+                    flag = true;
                 }
             }
-            if (!found)
+            if (!flag)
             {
                 Console.WriteLine("Автомобили с такой моделью не найдены.");
             }
         }
-        // Метод поиска и вывода информации о наиболее дорогом автомобиле
-        public static void FindMostExpensive(DealerCenter[] array)
+        public static void FindMostExpensive(DealerCenter[] array)// Метод поиска и вывода информации о наиболее дорогом автомобиле
         {
             if (array == null || array.Length == 0) return;
-
             int maxIndex = 0;
             for (int i = 1; i < array.Length; i++)
             {
@@ -160,8 +191,7 @@ namespace DealerCenterApp
             Console.WriteLine("\n--- Информация о самом дорогом автомобиле ---");
             array[maxIndex].PrintInfoObjStruct();
         }
-        // Метод генерации случайного события, влияющего на цену или комплектацию
-        public static void TriggerRandomEvent(ref DealerCenter car)
+        public static void TriggerRandomEvent(ref DealerCenter car)// Метод генерации случайного события
         {
             Random rnd = new Random();
             int eventType = rnd.Next(3); // 3 возможных сценария
@@ -169,33 +199,41 @@ namespace DealerCenterApp
             switch (eventType)
             {
                 case 0: // Скидка
-                    car.Price -= changeValue;
-                    if (car.Price < 0) car.Price = 0;
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine($"\nВНИМАНИЕ! На автомобиль {car.Brand} {car.Model} объявлена сезонная скидка! Цена снижена на {changeValue:N2} руб.");
-                    break;
+                    {
+                        car.Price -= changeValue;
+                        if (car.Price < 0) car.Price = 0;
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.WriteLine($"\nВНИМАНИЕ! На автомобиль {car.Brand} {car.Model} объявлена скидка! Цена снижена на {changeValue} руб.");
+                        break;
+                    }
                 case 1: // Повышение цены
-                    car.Price += changeValue;
-                    Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine($"\nВНИМАНИЕ! Из-за изменения курса валют цена на автомобиль {car.Brand} {car.Model} увеличилась на {changeValue:N2} руб.");
+                    {
+                        car.Price += changeValue;
+                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                        Console.WriteLine($"\nВНИМАНИЕ! Цена на автомобиль {car.Brand} {car.Model} увеличилась на {changeValue} руб.");
+                    }
                     break;
                 case 2: // Бонус к комплектации
                     car.Equipment = car.Equipment + " (+ Подарочный комплект зимней резины)";
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.WriteLine($"\nВНИМАНИЕ! Акция от дилера! В комплектацию автомобиля {car.Brand} {car.Model} бесплатно добавлен зимний пакет.");
+                    
                     break;
             }
             Console.ForegroundColor = ConsoleColor.Black; // Возвращаем цвет текста
-            Console.Write("Актуальное состояние: ");
+            Console.Write("Актуальное состояние: \n");
             car.PrintInfoObjStruct();
         }
-        // Ообработки ошибок
-        static void HandleError(Exception ex)
+        static void HandleError(Exception ex)//  функция обработки ошибок
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"\n[КРИТИЧЕСКАЯ ОШИБКА]: {ex.Message}");
-            Console.ResetColor();
-            Console.BackgroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"\nОШИБКА: {ex.Message}");
+            Console.ForegroundColor = ConsoleColor.Black;
+        }
+        public static void HandleError(string message)//  функция обработки ошибок
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Ошибка {message}");
             Console.ForegroundColor = ConsoleColor.Black;
         }
     }
